@@ -5,6 +5,8 @@ test_modules = [
     'cryptutil',
     'oidutil',
     'dh',
+    'django',
+    'pycurl'
     ]
 
 def fixpath():
@@ -120,16 +122,12 @@ def pyunitTests():
 
     return runner.run(s)
 
-
-
 def splitDir(d, count):
     # in python2.4 and above, it's easier to spell this as
     # d.rsplit(os.sep, count)
     for i in xrange(count):
         d = os.path.dirname(d)
     return d
-
-
 
 def _import_djopenid():
     """Import djopenid from examples/
@@ -151,8 +149,6 @@ def _import_djopenid():
     # importable.  New feature in python 2.3, see PEP 302.
     djopenid.__path__ = [djdir]
     sys.modules['djopenid'] = djopenid
-
-
 
 def django_tests():
     """Runs tests from examples/djopenid.

@@ -4,13 +4,17 @@ import socket
 import os.path, unittest, sys, time
 from cStringIO import StringIO
 
-import twill.commands, twill.parse, twill.unit
+import twill
+from twill import commands
+from twill import unit
+from twill import parse
 
 from openid.consumer.discover import \
      OpenIDServiceEndpoint, OPENID_1_1_TYPE
 from openid.consumer.consumer import AuthRequest
 
-class TwillTest(twill.unit.TestInfo):
+
+class TwillTest(unit.TestInfo):
     """Variant of twill.unit.TestInfo that runs a function as a test script,
     not twill script from a file.
     """
@@ -73,8 +77,15 @@ class TestServer(unittest.TestCase):
         self.twillErr = StringIO()
         twill.set_output(self.twillOutput)
         twill.set_errout(self.twillErr)
-        # FIXME: make sure we pick an available port.
-        self.server_port = 8080
+        def get_open_port():
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind(("",0))
+            s.listen(1)
+            port = s.getsockname()[1]
+            s.close()
+            return port
+        self.server_port = get_open_port()
 
         # We need something to feed the server as a realm, but it needn't
         # be reachable.  (Until we test realm verification.)
@@ -149,22 +160,16 @@ class TestServer(unittest.TestCase):
         authreq = AuthRequest(endpoint, assoc=None)
         url = authreq.redirectURL(self.realm, self.return_to)
 
-        c = twill.commands
-
         try:
-            c.go(url)
-            c.code(200)
-            c.get_browser()._browser.set_handle_redirect(False)
-            c.formvalue(1, 'remember', 'true')
-            c.find('name="login_as" value="bob"')
-            c.submit("yes")
-            c.code(302)
-            # Since we set remember=yes, the second time we shouldn't
-            # see that page.
-            c.go(url)
-            c.code(302)
-            headers = c.get_browser()._browser.response().info()
-            finalURL = headers['Location']
+            browser = twill.commands.get_browser()
+            browser.get_form()
+            browser.formvalue(1, 'remember', 'true')
+            browser.find('name="login_as" value="bob"')
+            browser.submit("yes")
+            browser.code(302)
+            browser.go(url)
+            browser.code(302)
+            finalURL = browser._browser._response.info().getheaders('location')
             self.failUnless(finalURL.startswith(self.return_to))
         except twill.commands.TwillAssertionError, e:
             from traceback import format_exc
@@ -172,7 +177,7 @@ class TestServer(unittest.TestCase):
                 format_exc(),
                 self.twillOutput.getvalue(),
                 self.twillErr.getvalue(),
-                c.get_browser().get_html())
+                twill.commands.get_browser().get_html())
             self.fail(msg)
 
 

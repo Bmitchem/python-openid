@@ -29,7 +29,7 @@ __all__ = [
 import hmac
 import os
 import random
-
+import pickle
 from openid.oidutil import toBase64, fromBase64
 
 try:
