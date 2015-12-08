@@ -97,7 +97,7 @@
     </div>
   {% endif %}
 
-  <form method="post" action="{{ consumer_url }}">
+  <form id='consumer-auth-form' method="post" action="{{ consumer_url }}">
     <input type="text" size="40" name="openid_identifier" />
 
     <p>
@@ -109,9 +109,9 @@
       <tr>
         <td><input type="checkbox" name="policy_{{ pair.0 }}" id="id_policy_{{ pair.0 }}" /></td>
         <td>
-          <label for="id_policy_{{ pair.0 }}"><tt>
+          <label for="id_policy_{{ pair.0 }}"><code>
             {{ pair.1 }}
-          </tt></label>
+          </code></label>
         </td>
       </tr>
       {% endfor %}

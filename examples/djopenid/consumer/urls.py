@@ -1,9 +1,8 @@
-
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
-    'djopenid.consumer.views',
-    (r'^$', 'startOpenID'),
-    (r'^finish/$', 'finishOpenID'),
-    (r'^xrds/$', 'rpXRDS'),
+    'consumer.views',
+    url(r'^$', 'startOpenID', name='startOpenID'),
+    url(r'^finish/$', 'finishOpenID', name='finishOpenID'),
+    url(r'^xrds/$', 'rpXRDS', name='rpXRDS'),
 )

@@ -1,8 +1,8 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns(
     '',
-    ('^$', 'djopenid.views.index'),
-    ('^consumer/', include('djopenid.consumer.urls')),
-    ('^server/', include('djopenid.server.urls')),
+    url(r'^$', 'djopenid.views.index'),
+    url(r'^consumer/', include('djopenid.consumer.urls', namespace='consumer')),
+    url(r'^server/', include('djopenid.server.urls', namespace='server')),
 )

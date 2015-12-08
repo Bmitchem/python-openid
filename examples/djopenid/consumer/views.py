@@ -1,7 +1,7 @@
 
 from django import http
 from django.http import HttpResponseRedirect
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render
 
 from openid.consumer import consumer
 from openid.consumer.discover import DiscoveryFailure
@@ -9,7 +9,7 @@ from openid.extensions import ax, pape, sreg
 from openid.yadis.constants import YADIS_HEADER_NAME, YADIS_CONTENT_TYPE
 from openid.server.trustroot import RP_RETURN_TO_URL_TYPE
 
-from djopenid import util
+from examples.djopenid import util
 
 PAPE_POLICIES = [
     'AUTH_PHISHING_RESISTANT',
@@ -38,7 +38,7 @@ def renderIndexPage(request, **template_args):
     template_args['consumer_url'] = util.getViewURL(request, startOpenID)
     template_args['pape_policies'] = POLICY_PAIRS
 
-    response =  direct_to_template(
+    response = render(
         request, 'consumer/index.html', template_args)
     response[YADIS_HEADER_NAME] = util.getViewURL(request, rpXRDS)
     return response
@@ -128,7 +128,7 @@ def startOpenID(request):
             form_id = 'openid_message'
             form_html = auth_request.formMarkup(trust_root, return_to,
                                                 False, {'id': form_id})
-            return direct_to_template(
+            return render(
                 request, 'consumer/request_form.html', {'html': form_html})
 
     return renderIndexPage(request)

@@ -1,12 +1,11 @@
-
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
-    'djopenid.server.views',
-    (r'^$', 'server'),
-    (r'^xrds/$', 'idpXrds'),
-    (r'^processTrustResult/$', 'processTrustResult'),
-    (r'^user/$', 'idPage'),
-    (r'^endpoint/$', 'endpoint'),
-    (r'^trust/$', 'trustPage'),
+    'server.views',
+    url(r'^$', 'server', name='server'),
+    url(r'^xrds/$', 'idpXrds', name='idpXrds'),
+    url(r'^processTrustResult/$', 'processTrustResult', name='processTrustResult'),
+    url(r'^user/$', 'idPage', name='idPage'),
+    url(r'^endpoint/$', 'endpoint', name='endpoint'),
+    url(r'^trust/$', 'trustPage', name='trustPage'),
 )

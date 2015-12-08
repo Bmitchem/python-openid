@@ -163,7 +163,7 @@ class TestServer(unittest.TestCase):
 
         try:
             browser = twill.commands.get_browser()
-            browser.get_form()
+            browser.get_all_forms()
             browser.formvalue(1, 'remember', 'true')
             browser.find('name="login_as" value="bob"')
             browser.submit("yes")

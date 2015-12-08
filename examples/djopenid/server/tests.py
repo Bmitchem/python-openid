@@ -1,34 +1,27 @@
-
+from django.core.urlresolvers import reverse
 from django.test.testcases import TestCase
-from djopenid.server import views
-from djopenid import util
+import views
+from examples.djopenid import util
 
 from django.http import HttpRequest
-from django.contrib.sessions.middleware import SessionWrapper
 
 from openid.server.server import CheckIDRequest
 from openid.message import Message
 from openid.yadis.constants import YADIS_CONTENT_TYPE
 from openid.yadis.services import applyFilter
 
-def dummyRequest():
-    request = HttpRequest()
-    request.session = SessionWrapper("test")
-    request.META['HTTP_HOST'] = 'example.invalid'
-    request.META['SERVER_PROTOCOL'] = 'HTTP'
-    return request
+from django.test import RequestFactory
+
 
 class TestProcessTrustResult(TestCase):
     def setUp(self):
-        self.request = dummyRequest()
-
-        id_url = util.getViewURL(self.request, views.idPage)
-
+        self.factory = RequestFactory()
+        self.request = self.factory.get(path=reverse('idPage'))
         # Set up the OpenID request we're responding to.
         op_endpoint = 'http://127.0.0.1:8080/endpoint'
         message = Message.fromPostArgs({
             'openid.mode': 'checkid_setup',
-            'openid.identity': id_url,
+            'openid.identity': reverse('idPage'),
             'openid.return_to': 'http://127.0.0.1/%s' % (self.id(),),
             'openid.sreg.required': 'postcode',
             })

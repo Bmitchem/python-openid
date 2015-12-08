@@ -1,14 +1,7 @@
 # Django settings for djopenid project.
 
+from __future__ import absolute_import
 import os
-import sys
-import warnings
-
-try:
-    import openid
-except ImportError, e:
-    warnings.warn("Could not import OpenID library.  Please consult the djopenid README.")
-    sys.exit(1)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -45,10 +38,6 @@ SITE_ID = 1
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ''
 
-# URL that handles the media served from MEDIA_ROOT.
-# Example: "http://media.lawrence.com"
-MEDIA_URL = ''
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -63,18 +52,32 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.load_template_source',
 )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
 )
 
 ROOT_URLCONF = 'djopenid.urls'
 
-TEMPLATE_CONTEXT_PROCESSORS = ()
+PROJECT_ROOT=os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+SITE_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, os.path.pardir))
 
+MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_ROOT, "static/"),
+)
 TEMPLATE_DIRS = (
     os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates')),
 )
@@ -82,7 +85,6 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-
-    'djopenid.consumer',
-    'djopenid.server',
+    'consumer',
+    'server',
 )

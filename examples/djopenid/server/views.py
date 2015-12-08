@@ -17,11 +17,11 @@ Some code conventions used here:
 
 import cgi
 
-from djopenid import util
-from djopenid.util import getViewURL
+from django.shortcuts import render
+from examples.djopenid import util
+from examples.djopenid.util import getViewURL
 
 from django import http
-from django.views.generic.simple import direct_to_template
 
 from openid.server.server import Server, ProtocolError, CheckIDRequest, \
      EncodingError
@@ -64,7 +64,7 @@ def server(request):
     """
     Respond to requests for the server's primary web page.
     """
-    return direct_to_template(
+    return render(
         request,
         'server/index.html',
         {'user_url': getViewURL(request, idPage),
@@ -83,7 +83,7 @@ def idPage(request):
     """
     Serve the identity page for OpenID URLs.
     """
-    return direct_to_template(
+    return render(
         request,
         'server/idPage.html',
         {'server_url': getViewURL(request, endpoint)})
@@ -93,7 +93,7 @@ def trustPage(request):
     Display the trust page template, which allows the user to decide
     whether to approve the OpenID verification.
     """
-    return direct_to_template(
+    return render(
         request,
         'server/trust.html',
         {'trust_handler_url':getViewURL(request, processTrustResult)})
@@ -112,7 +112,7 @@ def endpoint(request):
         openid_request = s.decodeRequest(query)
     except ProtocolError, why:
         # This means the incoming request was invalid.
-        return direct_to_template(
+        return render(
             request,
             'server/endpoint.html',
             {'error': str(why)})
@@ -120,7 +120,7 @@ def endpoint(request):
     # If we did not get a request, display text indicating that this
     # is an endpoint.
     if openid_request is None:
-        return direct_to_template(
+        return render(
             request,
             'server/endpoint.html',
             {})
@@ -196,7 +196,7 @@ def showDecidePage(request, openid_request):
 
     pape_request = pape.Request.fromOpenIDRequest(openid_request)
 
-    return direct_to_template(
+    return render(
         request,
         'server/trust.html',
         {'trust_root': trust_root,
@@ -264,7 +264,7 @@ def displayResponse(request, openid_response):
     except EncodingError, why:
         # If it couldn't be encoded, display an error.
         text = why.response.encodeToKVForm()
-        return direct_to_template(
+        return render(
             request,
             'server/endpoint.html',
             {'error': cgi.escape(text)})
