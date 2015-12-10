@@ -129,26 +129,26 @@ def splitDir(d, count):
         d = os.path.dirname(d)
     return d
 
-def _import_djopenid():
-    """Import djopenid from examples/
-
-    It's not in sys.path, and I don't really want to put it in sys.path.
-    """
-    import types
-    thisfile = os.path.abspath(sys.modules[__name__].__file__)
-    topDir = splitDir(thisfile, 2)
-    djdir = os.path.join(topDir, 'examples', 'djopenid')
-
-    djinit = os.path.join(djdir, '__init__.py')
-
-    djopenid = types.ModuleType('djopenid')
-    execfile(djinit, djopenid.__dict__)
-    djopenid.__file__ = djinit
-
-    # __path__ is the magic that makes child modules of the djopenid package
-    # importable.  New feature in python 2.3, see PEP 302.
-    djopenid.__path__ = [djdir]
-    sys.modules['djopenid'] = djopenid
+# def _import_djopenid():
+#     """Import djopenid from examples/
+#
+#     It's not in sys.path, and I don't really want to put it in sys.path.
+#     """
+#     import types
+#     thisfile = os.path.abspath(sys.modules[__name__].__file__)
+#     topDir = splitDir(thisfile, 2)
+#     djdir = os.path.join(topDir, 'examples', 'djopenid')
+#
+#     djinit = os.path.join(djdir, '__init__.py')
+#
+#     djopenid = types.ModuleType('djopenid')
+#     execfile(djinit, djopenid.__dict__)
+#     djopenid.__file__ = djinit
+#
+#     # __path__ is the magic that makes child modules of the djopenid package
+#     # importable.  New feature in python 2.3, see PEP 302.
+#     djopenid.__path__ = [djdir]
+#     sys.modules['djopenid'] = djopenid
 
 def django_tests():
     """Runs tests from examples/djopenid.
@@ -157,24 +157,20 @@ def django_tests():
     """
     import os
     # Django uses this to find out where its settings are.
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'djopenid.settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'examples.djopenid.settings'
 
-    _import_djopenid()
+    import django
+    django.setup()
 
-    try:
-        import django.test.simple
-    except ImportError, e:
-        warnings.warn("django.test.simple not found; "
-                      "django examples not tested.")
-        return 0
-    import djopenid.server.models, djopenid.consumer.models
+    from django.test.utils import get_runner
+    from django.conf import settings
+    settings.configure()
+
     print "Testing Django examples:"
 
-    # These tests do get put in to a pyunit test suite, so we could run them
-    # with the other pyunit tests, but django also establishes a test database
-    # for them, so we let it do that thing instead.
-    return django.test.simple.run_tests([djopenid.server.models,
-                                         djopenid.consumer.models])
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
+    return test_runner.run_tests(['server','consumer'])
 
 try:
     bool
@@ -197,4 +193,5 @@ def main():
     return failed
 
 if __name__ == '__main__':
-    sys.exit(main() and 1 or 0)
+    # sys.exit(main() and 1 or 0)
+    django_tests()

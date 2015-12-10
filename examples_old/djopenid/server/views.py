@@ -17,6 +17,7 @@ Some code conventions used here:
 
 import cgi
 
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from examples.djopenid import util
 from examples.djopenid.util import getViewURL
@@ -67,7 +68,7 @@ def server(request):
     return render(
         request,
         'server/index.html',
-        {'user_url': getViewURL(request, idPage),
+        {'user_url': reverse('server:idPage'),
          'server_xrds_url': getViewURL(request, idpXrds),
          })
 
